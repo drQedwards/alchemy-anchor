@@ -1,5 +1,7 @@
 # Architecture
 
+Official SCF #45 product: **alchemy-anchor**. Interest form filed. Not an award.
+
 ```
   Wallet                         alchemy-anchor                      Alchemy Pay
     │                                  │                                  │

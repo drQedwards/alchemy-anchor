@@ -53,5 +53,22 @@ export const ALCHEMY_PAY = {
 export const ANCHOR = {
   name: 'alchemy-anchor',
   signingKey: 'GB5SDDZW5LIHIIEAZIVQWNVQDGDV4JJRFCWAU64QW4J2PWO6ZD3PALGJ',
-  note: 'SEP-24 wrap of Alchemy Pay. Card PAN never touches this process. Circle USDC is the terminus.',
+  note: 'Official SCF #45 product. SEP-24 wrap of Alchemy Pay. Card PAN never touches this process. Circle USDC is the terminus.',
+};
+
+export const SCF = {
+  officialProduct: 'alchemy-anchor',
+  repo: 'https://github.com/drQedwards/alchemy-anchor',
+  round: 45,
+  track: 'Open Track',
+  title: 'Secure Memory Persistence in Agentic Wallets',
+  interestForm: 'filed',
+  award: false,
+  dashboard:
+    'https://communityfund.stellar.org/dashboard/award-rounds/reccaFUJmN4HNQxvo',
+  requestedUsd: 125000,
+  capUsd: 150000,
+  primitive: 'pmll_anchor',
+  auditor: 'https://github.com/drQedwards/interchain-auditor',
+  note: 'This repo is the official SCF product. pmll_anchor is the live primitive. interchain-auditor keeps digest books. Not an award.',
 };

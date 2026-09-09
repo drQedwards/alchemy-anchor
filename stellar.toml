@@ -17,6 +17,9 @@ ORG_NAME = "alchemy-anchor"
 ORG_URL = "https://github.com/drQedwards/alchemy-anchor"
 ORG_GITHUB = "https://github.com/drQedwards/alchemy-anchor"
 PRIMITIVE = "pmll_anchor"
+SCF_ROUND = "45"
+SCF_TRACK = "Open Track"
+SCF_PRODUCT = "alchemy-anchor"
 
 [contracts]
 pmll_anchor = "CCF3B64AXLS4OLY5RN4H4K2CFZAYNZCJQY5MKCKCVAKMZNH7G7F7XUUF"
@@ -39,6 +42,7 @@ desc = "Optional Alchemy Pay Stellar ramp output. Terminus remains Circle USDC."
 status = "live"
 
 [notes]
+# Official SCF #45 product. Interest form filed. Not an award.
 # alchemy-anchor wraps Alchemy Pay hosted checkout. Card PAN never touches this process.
 # Ethereum RPC (eth-mainnet.g.alchemy.com) is a Circle USDC watcher, not a card rail.
 # After the Stellar payment lands, hash the XDR envelope and HITL-store the 32-byte digest on pmll_anchor.

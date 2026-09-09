@@ -1,21 +1,27 @@
 # alchemy-anchor
 
-**Stellar SEP-24 payment anchor that wraps Alchemy Pay cards.**
+**Official SCF #45 product.** Stellar SEP-24 payment anchor that wraps Alchemy
+Pay cards.
 
 Honors existing Circle USDC. Never mints a dollar. After the Stellar payment
 lands, hash the XDR envelope and commit that 32-byte digest to
 [`pmll_anchor`](https://stellar.expert/explorer/public/contract/CCF3B64AXLS4OLY5RN4H4K2CFZAYNZCJQY5MKCKCVAKMZNH7G7F7XUUF).
 
 Alchemy Pay's 2023 Stellar ramp is a hosted plugin, not a directory listing a
-wallet can point at. This repo is the SEP-24 host.
+wallet can point at. This repo is the SEP-24 host — and the SCF project.
+
+Interest form filed. **This is not an award.**
 
 | | |
 |---|---|
+| Round | [SCF #45](https://communityfund.stellar.org/dashboard/award-rounds/reccaFUJmN4HNQxvo) Open Track |
+| Requested | $125,000 worth of XLM (cap $150,000) |
 | Rail | Alchemy Pay hosted checkout (cards stay on the processor) |
 | First settlement | Circle USDC on Stellar (`GA5ZSEJY…KZVN`) |
 | Optional hop | Stellar USDT0, XLM |
 | Ethereum RPC | Watcher only — `eth-mainnet.g.alchemy.com` is **not** the card API |
 | Primitive | `CCF3B64AXLS4OLY5RN4H4K2CFZAYNZCJQY5MKCKCVAKMZNH7G7F7XUUF` |
+| Auditor (books) | [interchain-auditor](https://github.com/drQedwards/interchain-auditor) |
 | Repo | https://github.com/drQedwards/alchemy-anchor |
 
 ## 1. Create `.env`
@@ -151,7 +157,9 @@ approved in the Alchemy dashboard.
 
 ## Docs
 
+- [SCF brief](docs/SCF.md)
 - [Architecture](docs/ARCHITECTURE.md)
+- [Discord paste](docs/DISCORD.md)
 - [Alchemy Subscription API](https://www.alchemy.com/docs/reference/subscription-api)
 - [Alchemy Solana](https://www.alchemy.com/docs/solana/solana-api-overview)
 - [SEP-24](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md)

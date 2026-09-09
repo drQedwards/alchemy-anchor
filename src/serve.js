@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ANCHOR, ASSETS, PMLL_ANCHOR } from './constants.js';
+import { ANCHOR, ASSETS, PMLL_ANCHOR, SCF } from './constants.js';
 import { ROOT, optionalEnv } from './config.js';
 import { challengeTx, tokenFromSignedChallenge, verifyJwt } from './sep10.js';
 import { info, startDeposit, startWithdraw, getTx, listTx, markPending } from './sep24.js';
@@ -75,6 +75,12 @@ const server = createServer(async (req, res) => {
         primitive: PMLL_ANCHOR.contractId,
         terminus: ASSETS.usdc.label,
         rail: 'alchemy-pay',
+        scf: {
+          officialProduct: SCF.officialProduct,
+          round: SCF.round,
+          track: SCF.track,
+          award: SCF.award,
+        },
       });
       return;
     }

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { ANCHOR, ASSETS, PMLL_ANCHOR } from './constants.js';
+import { ANCHOR, ASSETS, PMLL_ANCHOR, SCF } from './constants.js';
 import { wrapAlchemyPay } from './alchemy-pay.js';
 import { info } from './sep24.js';
 import { commitFromTxHash } from './stellar-watcher.js';
@@ -15,7 +15,7 @@ const flags = Object.fromEntries(
 
 async function main() {
   if (!cmd || cmd === 'help' || cmd === '-h') {
-    console.log(`alchemy-anchor — wrap Alchemy Pay, settle Circle USDC, commit XDR to pmll_anchor
+    console.log(`alchemy-anchor — official SCF #45 product. Wrap Alchemy Pay, settle Circle USDC, commit XDR to pmll_anchor
 
   node src/cli.js ids
   node src/cli.js info
@@ -36,6 +36,7 @@ The CLI never signs store/bump. A human must.
       rail: 'alchemy-pay',
       firstSettlement: 'stellar-circle-usdc',
       ethWatcher: 'optional Circle USDC Transfer logs — not a card rail',
+      scf: SCF,
     }, null, 2));
     return;
   }

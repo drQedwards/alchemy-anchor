@@ -1,0 +1,8 @@
+{
+  "drips": {
+    "ethereum": {
+      "ownedBy": "0x64291eebc576C331ED6e8890Af176C079B9F5C7e"
+    }
+  },
+  "note": "Gitcoin Drips owner is jkdrq.eth. This repo is the official SCF #45 product (alchemy-anchor). Primitive: drQedwards/pmll pmll_anchor. Auditor books: drQedwards/interchain-auditor. Not an award."
+}
