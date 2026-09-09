@@ -1,0 +1,35 @@
+{
+  "name": "Alchemy",
+  "slug": "alchemy",
+  "facet": "alchemy-card",
+  "repo": "https://github.com/drQedwards/alchemy-anchor",
+  "directory": "https://anchors.stellar.org/?payment=Card&s=Alchemy",
+  "standards": [
+    "SEP-1",
+    "SEP-10",
+    "SEP-24"
+  ],
+  "payment_rails": [
+    "Card"
+  ],
+  "status": "listing-requested",
+  "home_domain": null,
+  "reason_unlisted": "anchors.stellar.org has no Alchemy card listing. stellar.toml still points at localhost. No public HTTPS origin and no Alchemy Pay card PAGE URL yet.",
+  "assets": [
+    {
+      "code": "USDC",
+      "issuer": "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN",
+      "mode": "transfer-only",
+      "mint": false,
+      "issuer_of_record": "Circle"
+    }
+  ],
+  "constraints": [
+    "Do not mint.",
+    "Do not broadcast a pmll_anchor store.",
+    "Circle USDC stays transfer-only.",
+    "Minted disbursements still require a completed MoonPay transaction UUID. That gate is on main via PR #1."
+  ],
+  "pmll_anchor": "CCF3B64AXLS4OLY5RN4H4K2CFZAYNZCJQY5MKCKCVAKMZNH7G7F7XUUF",
+  "store": "not-broadcast"
+}
