@@ -20,6 +20,9 @@ Interest form filed. **This is not an award.**
 | First settlement | Circle USDC on Stellar (`GA5ZSEJY…KZVN`) |
 | Optional hop | Stellar USDT0, XLM |
 | Ethereum RPC | Watcher only — `eth-mainnet.g.alchemy.com` is **not** the card API |
+| Robinhood Chain | Read RPC, chain id **4663**. Not a wallet. Does not sign. |
+| Interchainer | USDC / BTC / SOL / XLM / ETH hops → `pmll_anchor` → Alchemy Pay card |
+| MoonPay UUID | Required before any disbursement of **minted** Q/QI. Never mint USDC. |
 | Primitive | `CCF3B64AXLS4OLY5RN4H4K2CFZAYNZCJQY5MKCKCVAKMZNH7G7F7XUUF` |
 | Auditor (books) | [interchain-auditor](https://github.com/drQedwards/interchain-auditor) |
 | Repo | https://github.com/drQedwards/alchemy-anchor |
@@ -68,6 +71,7 @@ node src/cli.js ids
 node demo-script.js              # Smart Websockets: newHeads + USDC Transfer logs
 node scripts/demo-rpc.js         # Ethereum mainnet node RPCs
 node scripts/demo-solana.js      # Solana mainnet JSON-RPC
+node scripts/demo-robinhood.js   # Robinhood Chain 4663, read only
 ```
 
 Keep the websocket open:
@@ -123,6 +127,23 @@ node src/cli.js commit --tx <horizon_tx_hash>
 
 That prints a HITL `stellar contract invoke … store` line. **The CLI does not
 send it.** Review the digest, then a human signs.
+
+Move USDC/BTC/SOL/XLM/ETH through the interchainer, then fund the Alchemy card:
+
+```bash
+node src/cli.js rh
+node src/cli.js route --assets USDC,BTC,SOL,XLM,ETH --account G... --amount 25
+node src/cli.js confirm --uuid <moonpay-transaction-uuid> --status completed
+node src/cli.js disburse --asset Q --amount 1 --dest G... --uuid <same-uuid>
+```
+
+`disburse` refuses USDC/BTC/SOL/XLM/ETH mint. Those move as transfers / on-ramps.
+Minted Q/QI will not print a store line until the MoonPay UUID is `completed`.
+
+Contracts (not deployed from this CLI; do not invent a CC):
+
+- `contracts/alchemy-anchor` — Soroban hop recorder. `route` panics unless MoonPay UUID is confirmed **and** `pmll_anchor.get(id)` matches.
+- `contracts/AlchemyAnchor.sol` — Robinhood Chain payrail. ERC-20/ETH **transfer**, never mint.
 
 ## 5. Alchemy CLI (already on this machine)
 

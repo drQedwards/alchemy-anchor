@@ -2,6 +2,8 @@ node_modules/
 .env
 .env.*
 !.env.example
+.moonpay-confirmations.json
+contracts/**/target/
 *.log
 .DS_Store
 coverage/

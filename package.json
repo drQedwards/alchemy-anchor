@@ -12,6 +12,7 @@
     "ws": "node demo-script.js",
     "rpc": "node scripts/demo-rpc.js",
     "solana": "node scripts/demo-solana.js",
+    "rh": "node scripts/demo-robinhood.js",
     "test": "node --test test/*.test.js"
   },
   "engines": {

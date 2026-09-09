@@ -2,12 +2,16 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ANCHOR, ASSETS, PMLL_ANCHOR, SCF } from './constants.js';
+import { ANCHOR, ASSETS, INTERCHAINER, PMLL_ANCHOR, SCF } from './constants.js';
 import { ROOT, optionalEnv } from './config.js';
 import { challengeTx, tokenFromSignedChallenge, verifyJwt } from './sep10.js';
 import { info, startDeposit, startWithdraw, getTx, listTx, markPending } from './sep24.js';
 import { wrapAlchemyPay } from './alchemy-pay.js';
 import { commitFromTxHash } from './stellar-watcher.js';
+import { probeRobinhoodChain } from './robinhood.js';
+import { planInterchainRoute } from './interchainer.js';
+import { recordMoonPayConfirmation, fetchMoonPayTransaction } from './moonpay.js';
+import { planMintedDisbursement } from './disburse.js';
 
 const web = join(ROOT, 'web');
 const types = {
@@ -75,6 +79,8 @@ const server = createServer(async (req, res) => {
         primitive: PMLL_ANCHOR.contractId,
         terminus: ASSETS.usdc.label,
         rail: 'alchemy-pay',
+        interchainer: INTERCHAINER.contractId,
+        hops: INTERCHAINER.assets,
         scf: {
           officialProduct: SCF.officialProduct,
           round: SCF.round,
@@ -83,6 +89,29 @@ const server = createServer(async (req, res) => {
         },
       });
       return;
+    }
+
+    if (url.pathname === '/rh' && req.method === 'GET') {
+      return json(res, 200, await probeRobinhoodChain());
+    }
+
+    if (url.pathname === '/route' && req.method === 'POST') {
+      const body = await readBody(req);
+      return json(res, 200, planInterchainRoute(body));
+    }
+
+    if (url.pathname === '/moonpay/confirm' && req.method === 'POST') {
+      const body = await readBody(req);
+      if (!body.uuid) return json(res, 400, { error: 'uuid is required' });
+      const row = body.status
+        ? recordMoonPayConfirmation({ uuid: body.uuid, status: body.status })
+        : await fetchMoonPayTransaction(body.uuid);
+      return json(res, 200, row);
+    }
+
+    if (url.pathname === '/disburse' && req.method === 'POST') {
+      const body = await readBody(req);
+      return json(res, 200, planMintedDisbursement(body));
     }
 
     if (url.pathname === '/auth' && req.method === 'GET') {

@@ -38,3 +38,27 @@ Card number, CVV, email, KYC documents, Alchemy Pay order JSON. Only the XDR dig
 
 `src/store-cmd.js` prints `stellar contract invoke … store`. It does not send.
 Always `get` after `store` and refuse a mismatched digest.
+
+## Interchainer + payrails + MoonPay UUID
+
+```
+  USDC / BTC / SOL / XLM / ETH
+            │
+            ▼
+  pmll_anchor_interchainer (plan hops, HITL store)
+            │
+            ▼
+  Alchemy Pay wrap  →  Alchemy card
+            │
+  minted Q/QI only  →  MoonPay UUID must be completed
+            │
+            ▼
+  alchemy_anchor.route  requires  pmll_anchor.get(id) == commitment
+```
+
+Robinhood Chain RPC (`4663`) is a **read** endpoint. This process does not sign
+or send on that chain from the CLI.
+
+Disbursement of minted coins (Quorum Q / Qinterchain QI) is gated by
+`recordMoonPayConfirmation` / `GET /v1/transactions/{uuid}` with status
+`completed`. Circle USDC is never minted.

@@ -39,4 +39,12 @@ export function solanaHttpUrl() {
   return `https://solana-mainnet.g.alchemy.com/v2/${alchemyApiKey()}`;
 }
 
+export function robinhoodHttpUrl() {
+  return optionalEnv('ROBINHOOD_RPC_URL', 'https://rpc.mainnet.chain.robinhood.com');
+}
+
+export function moonpaySecretKey() {
+  return optionalEnv('MOONPAY_SECRET_KEY');
+}
+
 export const ROOT = root;

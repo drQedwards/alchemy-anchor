@@ -50,6 +50,42 @@ export const ALCHEMY_PAY = {
   fiat: 'USD',
 };
 
+/** Robinhood Chain mainnet. Read endpoint only — this process does not sign. */
+export const ROBINHOOD_CHAIN = {
+  chainId: 4663,
+  chainIdHex: '0x1237',
+  name: 'robinhood-mainnet',
+  http: 'https://rpc.mainnet.chain.robinhood.com',
+  explorer: 'https://robinhoodchain.blockscout.com',
+  testnetChainId: 46630,
+  testnetHttp: 'https://rpc.testnet.chain.robinhood.com',
+  note: 'Read RPC. Not a wallet. Not brokerage 3088. Not a mint.',
+};
+
+export const INTERCHAINER = {
+  contractId: PMLL_ANCHOR.contractId,
+  admin: PMLL_ANCHOR.admin,
+  hop: 'GAMWMZHAWQWQYB2FDPP3F53DVEYLVNW3Y4Q5GKQXVEZH5OKNYMP3NZN7',
+  methods: PMLL_ANCHOR.methods,
+  role: 'pmll_anchor_interchainer: each USDC/BTC/SOL/XLM/ETH hop commits 32 bytes, then payrails fund the Alchemy card',
+  forge: 'CD6AQDVCZUTKN2HOJ6UEMYCOT72TNM4CQLV2YNT7VFPIHN7UJFDQAFS7',
+  assets: Object.freeze(['USDC', 'BTC', 'SOL', 'XLM', 'ETH']),
+};
+
+/** Printer-minted assets only. Circle USDC is never minted here. */
+export const MINTER = {
+  mayMint: Object.freeze(['Q', 'QI']),
+  neverMint: Object.freeze(['USDC', 'USDT', 'USDT0', 'BTC', 'SOL', 'XLM', 'ETH']),
+  note: 'Disburse of minted Q/QI requires a completed MoonPay transaction UUID. Do not mint a dollar.',
+};
+
+export const MOONPAY = {
+  transactions: 'https://api.moonpay.com/v1/transactions',
+  sandboxTransactions: 'https://api.moonpay.com/v1/transactions',
+  completed: 'completed',
+  note: 'UUID confirmation is the gate. Secret key stays in .env as MOONPAY_SECRET_KEY.',
+};
+
 export const ANCHOR = {
   name: 'alchemy-anchor',
   signingKey: 'GB5SDDZW5LIHIIEAZIVQWNVQDGDV4JJRFCWAU64QW4J2PWO6ZD3PALGJ',
