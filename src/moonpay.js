@@ -69,6 +69,16 @@ export function getMoonPayConfirmation(uuidOrHash) {
   return confirmed.get(key) || null;
 }
 
+export function clearMoonPayConfirmation(uuid) {
+  const id = assertMoonPayUuid(uuid);
+  const row = confirmed.get(id);
+  if (row) {
+    confirmed.delete(id);
+    confirmed.delete(row.uuidHash);
+    persist();
+  }
+}
+
 export function assertMoonPayCompleted(uuid) {
   const id = assertMoonPayUuid(uuid);
   const row = confirmed.get(id);

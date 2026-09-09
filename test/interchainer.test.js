@@ -2,10 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { planInterchainRoute, assertHopAsset, HOP_ASSETS } from '../src/interchainer.js';
 import { INTERCHAINER, PMLL_ANCHOR, ROBINHOOD_CHAIN } from '../src/constants.js';
-import { hashMoonPayUuid, recordMoonPayConfirmation, assertMoonPayCompleted, assertMoonPayUuid } from '../src/moonpay.js';
+import { hashMoonPayUuid, recordMoonPayConfirmation, assertMoonPayCompleted, assertMoonPayUuid, clearMoonPayConfirmation } from '../src/moonpay.js';
 import { planMintedDisbursement, assertNotDollarMint } from '../src/disburse.js';
 
 const UUID = 'fd43b900-593b-4125-9616-7d721ecbe875';
+const GATE_UUID = 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa';
 
 test('Robinhood Chain id is 4663', () => {
   assert.equal(ROBINHOOD_CHAIN.chainId, 4663);
@@ -32,16 +33,18 @@ test('interchainer hops USDC BTC SOL XLM ETH and commits to live pmll_anchor', (
 });
 
 test('MoonPay UUID hash is 32 bytes and confirmation gates minted disbursement', () => {
-  assert.equal(assertMoonPayUuid(UUID), UUID);
-  const h = hashMoonPayUuid(UUID);
+  clearMoonPayConfirmation(GATE_UUID);
+  assert.equal(assertMoonPayUuid(GATE_UUID), GATE_UUID);
+  const h = hashMoonPayUuid(GATE_UUID);
   assert.match(h, /^[0-9a-f]{64}$/);
-  assert.throws(() => assertMoonPayCompleted(UUID), /not confirmed/);
-  recordMoonPayConfirmation({ uuid: UUID, status: 'completed' });
-  const d = planMintedDisbursement({ asset: 'Q', amount: '1', dest: 'GAMWMZ', moonpayUuid: UUID });
+  assert.throws(() => assertMoonPayCompleted(GATE_UUID), /not confirmed/);
+  recordMoonPayConfirmation({ uuid: GATE_UUID, status: 'completed' });
+  const d = planMintedDisbursement({ asset: 'Q', amount: '1', dest: 'GAMWMZ', moonpayUuid: GATE_UUID });
   assert.equal(d.mints, false);
   assert.equal(d.sends, false);
   assert.equal(d.uuidHash, h);
   assert.equal(d.store.humanMustSign, true);
+  clearMoonPayConfirmation(GATE_UUID);
 });
 
 test('never mint Circle USDC / BTC / SOL / XLM / ETH', () => {
