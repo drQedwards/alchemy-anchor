@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>alchemy-anchor</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main>
+    <p class="kicker">SEP-24 · Alchemy Pay wrap · Circle USDC terminus</p>
+    <h1>alchemy-anchor</h1>
+    <p>
+      Wallet authenticates with SEP-10, then this host opens Alchemy Pay checkout.
+      The card stays on the processor. We never mint a dollar. When the Stellar
+      payment lands, we hash the XDR and print a HITL <code>pmll_anchor.store</code>.
+    </p>
+    <ul>
+      <li>Rail: Alchemy Pay hosted checkout (cards)</li>
+      <li>First settlement: Circle USDC on Stellar (<code>GA5ZSEJY…KZVN</code>)</li>
+      <li>Ethereum RPC: optional Circle USDC watcher, not a second card rail</li>
+      <li>Primitive: <code>CCF3B64A…XUUF</code></li>
+    </ul>
+    <p class="links">
+      <a href="/.well-known/stellar.toml">stellar.toml</a>
+      · <a href="/sep24/info">SEP-24 /info</a>
+      · <a href="/health">health</a>
+      · <a href="https://github.com/drQedwards/alchemy-anchor">repo</a>
+    </p>
+  </main>
+</body>
+</html>

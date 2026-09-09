@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>alchemy-anchor checkout</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main>
+    <p class="kicker">SEP-24 interactive · Alchemy Pay</p>
+    <h1>Card checkout</h1>
+    <p id="status">Loading transaction…</p>
+    <p class="note">
+      Enter the card on Alchemy Pay's page. This origin never sees PAN, CVV, or expiry.
+    </p>
+    <iframe id="ramp" title="Alchemy Pay On/Off Ramp" allow="payment *" hidden></iframe>
+    <pre id="meta"></pre>
+  </main>
+  <script>
+    const id = new URLSearchParams(location.search).get('id');
+    const status = document.getElementById('status');
+    const ramp = document.getElementById('ramp');
+    const meta = document.getElementById('meta');
+    (async () => {
+      if (!id) { status.textContent = 'Missing transaction id.'; return; }
+      const res = await fetch('/sep24/tx/' + encodeURIComponent(id));
+      if (!res.ok) { status.textContent = 'Transaction not found.'; return; }
+      const tx = await res.json();
+      status.textContent = tx.status + ' · ' + (tx.asset_code || 'USDC') + ' → ' + (tx.account || '');
+      meta.textContent = JSON.stringify({
+        id: tx.id,
+        signed: tx.checkout?.signed,
+        settlement: tx.checkout?.settlement,
+        note: tx.checkout?.note,
+      }, null, 2);
+      if (tx.checkout?.url) {
+        ramp.src = tx.checkout.url;
+        ramp.hidden = false;
+      }
+    })().catch((err) => { status.textContent = String(err); });
+  </script>
+</body>
+</html>

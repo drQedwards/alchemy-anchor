@@ -1,0 +1,36 @@
+{
+  "name": "alchemy-anchor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Stellar SEP-24 payment anchor that wraps Alchemy Pay cards. Honors Circle USDC; never mints. Commits XDR digests to pmll_anchor.",
+  "type": "module",
+  "bin": {
+    "alchemy-anchor": "./src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/serve.js",
+    "ws": "node demo-script.js",
+    "rpc": "node scripts/demo-rpc.js",
+    "solana": "node scripts/demo-solana.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/drQedwards/alchemy-anchor"
+  },
+  "keywords": [
+    "stellar",
+    "sep-24",
+    "alchemy-pay",
+    "pmll-anchor",
+    "usdc"
+  ],
+  "dependencies": {
+    "@stellar/stellar-sdk": "^14.2.0",
+    "dotenv": "^16.6.1"
+  }
+}
