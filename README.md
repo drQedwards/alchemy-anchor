@@ -50,6 +50,7 @@ Alchemy Pay merchant credentials are placeholders (`ALCHEMY_PAY_APP_ID`, `ALCHEM
 | Circle USDC ↔ Solana (CCTP) | [docs/CCTP-SOLANA-POC.md](docs/CCTP-SOLANA-POC.md) | `scripts/cctp-stellar-to-solana-poc.mjs` |
 | USDT0 via LayerZero OFT | [docs/USDT0-LAYERZERO-BRIDGE.md](docs/USDT0-LAYERZERO-BRIDGE.md) | `scripts/usdt0-layerzero-poc.cjs` |
 | Drips Wave grant (USDC payout enqueue) | [docs/DRIPS-WAVE-GRANT.md](docs/DRIPS-WAVE-GRANT.md) | `scripts/drips-wave-grant.cjs` |
+| CCTP inbound `mint_and_forward` | [docs/CCTP-MINT-AND-FORWARD.md](docs/CCTP-MINT-AND-FORWARD.md) | `scripts/cctp-mint-and-forward.cjs` |
 
 Both rails are **human-operable** (`stellar` CLI + wallet). Assistants are optional glue; the anchor must not depend on cloud agents or AI to function.
 
