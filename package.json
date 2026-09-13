@@ -13,7 +13,8 @@
     "rpc": "node scripts/demo-rpc.js",
     "solana": "node scripts/demo-solana.js",
     "rh": "node scripts/demo-robinhood.js",
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "wave-grant": "node scripts/drips-wave-grant.cjs"
   },
   "engines": {
     "node": ">=22"
