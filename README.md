@@ -1,187 +1,54 @@
-# alchemy-anchor
+# Alchemy anchor
 
-**Official SCF #45 product.** Stellar SEP-24 payment anchor that wraps Alchemy
-Pay cards.
+Stellar SEP-24 payment anchor app. Wallets authenticate with SEP-10, then open Alchemy checkout. Alchemy Pay charges the card. We honor existing issued assets and never mint.
 
-Honors existing Circle USDC. Never mints a dollar. After the Stellar payment
-lands, hash the XDR envelope and commit that 32-byte digest to
-[`pmll_anchor`](https://stellar.expert/explorer/public/contract/CCF3B64AXLS4OLY5RN4H4K2CFZAYNZCJQY5MKCKCVAKMZNH7G7F7XUUF).
+## Setup
 
-Alchemy Pay's 2023 Stellar ramp is a hosted plugin, not a directory listing a
-wallet can point at. This repo is the SEP-24 host — and the SCF project.
-
-Interest form filed. **This is not an award.**
-
-| | |
-|---|---|
-| Round | [SCF #45](https://communityfund.stellar.org/dashboard/award-rounds/reccaFUJmN4HNQxvo) Open Track |
-| Requested | $125,000 worth of XLM (cap $150,000) |
-| Rail | Alchemy Pay hosted checkout (cards stay on the processor) |
-| First settlement | Circle USDC on Stellar (`GA5ZSEJY…KZVN`) |
-| Optional hop | Stellar USDT0, XLM |
-| Ethereum RPC | Watcher only — `eth-mainnet.g.alchemy.com` is **not** the card API |
-| Robinhood Chain | Read RPC, chain id **4663**. Not a wallet. Does not sign. |
-| Interchainer | USDC / BTC / SOL / XLM / ETH hops → `pmll_anchor` → Alchemy Pay card |
-| MoonPay UUID | Required before any disbursement of **minted** Q/QI. Never mint USDC. |
-| Primitive | `CCF3B64AXLS4OLY5RN4H4K2CFZAYNZCJQY5MKCKCVAKMZNH7G7F7XUUF` |
-| Auditor (books) | [interchain-auditor](https://github.com/drQedwards/interchain-auditor) |
-| Repo | https://github.com/drQedwards/alchemy-anchor |
-
-## 1. Create `.env`
-
-Never hard-code the key. Copy the example and fill it in:
+Create a `.env` file in this directory:
 
 ```bash
 cp .env.example .env
 ```
 
-Then edit `.env`:
+Then set:
 
 ```
-ALCHEMY_API_KEY=<your Alchemy dashboard key>
-STELLAR_SIGNING_SECRET=<S… matching SIGNING_KEY in stellar.toml>
-JWT_SECRET=<long random>
+ALCHEMY_API_KEY=<your-key>
 ```
 
-`ALCHEMY_API_KEY` is the **node** key (`eth-mainnet.g.alchemy.com` /
-`solana-mainnet.g.alchemy.com`). It does not charge a card.
+The Node RPC demo reads `process.env.ALCHEMY_API_KEY` via dotenv. Do not hard-code the key. `.env` is gitignored.
 
-Alchemy Pay merchant credentials are separate:
-
-```
-ALCHEMY_PAY_APP_ID=<from merchants.alchemypay.org>
-ALCHEMY_PAY_SECRET=<ramp signing secret>
-ALCHEMY_PAY_ENV=sandbox
-```
-
-Without those two, `/wrap` still returns an unsigned sandbox URL so SEP-24 can
-be exercised locally.
-
-## 2. Install and test
+## Run the Node RPC demo
 
 ```bash
 npm install
-npm test
-node src/cli.js ids
+npm run demo
 ```
 
-## 3. Alchemy demos (key from `.env`)
+The script calls Ethereum mainnet at `https://eth-mainnet.g.alchemy.com/v2/$ALCHEMY_API_KEY` and prints:
 
-```bash
-node demo-script.js              # Smart Websockets: newHeads + USDC Transfer logs
-node scripts/demo-rpc.js         # Ethereum mainnet node RPCs
-node scripts/demo-solana.js      # Solana mainnet JSON-RPC
-node scripts/demo-robinhood.js   # Robinhood Chain 4663, read only
-```
+- `eth_chainId` as hex and decimal. `0x1` / `1` means Ethereum mainnet.
+- `eth_blockNumber` is the latest block the node sees. It only proves the endpoint is live.
+- `eth_gasPrice` is a fee-market read. The script does not send a transaction.
 
-Keep the websocket open:
+## Anchor shape
 
-```bash
-ALCHEMY_WATCH=1 node demo-script.js
-```
+- Card rail: wrap Alchemy Pay cards. Card data stays with the processor.
+- First settlement: Alchemy Pay buys XLM or USDC on Stellar and sends it to the wallet.
+- After the Stellar payment lands, hash the XDR envelope and store only that 32-byte digest on pmll-anchor `CCF3B64AXLS4OLY5RN4H4K2CFZAYNZCJQY5MKCKCVAKMZNH7G7F7XUUF`.
+- The Ethereum RPC watches Circle USDC deposits. It is not a second card rail.
+- Optional honored Stellar asset: `USDT0:GATISXX6BZ6NC7IKQBY37CJD4SOZL3CYZJWXEDG6JVIY4WBS6KXJHN6Q`.
 
-### What the websocket response is
+`npm start` prints that contract. It does not deploy, spend, or open a public URL.
 
-`eth_subscribe` first returns a subscription id:
+Alchemy Pay merchant credentials are placeholders (`ALCHEMY_PAY_APP_ID`, `ALCHEMY_PAY_APP_SECRET`) until those are provisioned.
 
-```json
-{"jsonrpc":"2.0","id":1,"result":"0x…"}
-```
+## Bridge rails (USDC vs USDT0)
 
-Each new block is an `eth_subscription` notification whose `result` is a
-header: `number`, `hash`, `parentHash`, `timestamp`, `miner`, `gasUsed`.
-`logs` notifications are ERC-20 `Transfer` events on Circle USDC
-(`0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48`). That stream is the Ethereum
-watcher, not a card charge.
+| Rail | Docs | Script |
+|------|------|--------|
+| Circle USDC ↔ Solana (CCTP) | [docs/CCTP-SOLANA-POC.md](docs/CCTP-SOLANA-POC.md) | `scripts/cctp-stellar-to-solana-poc.mjs` |
+| USDT0 via LayerZero OFT | [docs/USDT0-LAYERZERO-BRIDGE.md](docs/USDT0-LAYERZERO-BRIDGE.md) | `scripts/usdt0-layerzero-poc.cjs` |
 
-### What the RPC response is
+Both rails are **human-operable** (`stellar` CLI + wallet). Assistants are optional glue; the anchor must not depend on cloud agents or AI to function.
 
-`eth_chainId` must be `0x1` (Ethereum mainnet). `eth_blockNumber` is the latest
-head. `eth_call` `totalSupply()` on Circle USDC is a sanity check that the node
-sees the token the watcher will later filter.
-
-### What the Solana response is
-
-`getHealth` should be `"ok"`. `getSlot` is the confirmed slot.
-`getLatestBlockhash` is what a later Solana tx would freeze. This is unrelated
-to Stellar settlement.
-
-## 4. Run the SEP-24 host
-
-```bash
-npm start
-```
-
-- Info: http://127.0.0.1:8787/sep24/info
-- TOML: http://127.0.0.1:8787/.well-known/stellar.toml
-- Wrap preview: http://127.0.0.1:8787/wrap?account=G…&amount=25
-
-Wallet flow: SEP-10 `/auth` → `POST /sep24/transactions/deposit/interactive` →
-open the returned URL → Alchemy Pay iframe.
-
-When a Stellar tx lands:
-
-```bash
-node src/cli.js commit --tx <horizon_tx_hash>
-```
-
-That prints a HITL `stellar contract invoke … store` line. **The CLI does not
-send it.** Review the digest, then a human signs.
-
-Move USDC/BTC/SOL/XLM/ETH through the interchainer, then fund the Alchemy card:
-
-```bash
-node src/cli.js rh
-node src/cli.js route --assets USDC,BTC,SOL,XLM,ETH --account G... --amount 25
-node src/cli.js confirm --uuid <moonpay-transaction-uuid> --status completed
-node src/cli.js disburse --asset Q --amount 1 --dest G... --uuid <same-uuid>
-```
-
-`disburse` refuses USDC/BTC/SOL/XLM/ETH mint. Those move as transfers / on-ramps.
-Minted Q/QI will not print a store line until the MoonPay UUID is `completed`.
-
-Contracts (not deployed from this CLI; do not invent a CC):
-
-- `contracts/alchemy-anchor` — Soroban hop recorder. `route` panics unless MoonPay UUID is confirmed **and** `pmll_anchor.get(id)` matches.
-- `contracts/AlchemyAnchor.sol` — Robinhood Chain payrail. ERC-20/ETH **transfer**, never mint.
-
-## 5. Alchemy CLI (already on this machine)
-
-The CLI is `@alchemy/cli` 0.24.0 and needs Node 22+.
-
-```bash
-npm i -g @alchemy/cli@latest
-alchemy auth login --device-code    # if a browser cannot reach this host
-alchemy wallet connect --mode session
-alchemy wallet address
-alchemy --json --no-interactive evm rpc eth_chainId
-```
-
-A session Agent Wallet is already connected here:
-
-| Chain | Address |
-|---|---|
-| EVM | `0x94ab6cfeb70c62e08e1a085630bfeb1ec769163c` |
-| Solana | `6pfso8YuDG3XqibUa7Kc9BZRDrfLovj1wmwjZnpuatei` |
-
-`alchemy wallet connect --mode local` would create a *new* local keypair. Do
-not do that unless you want a second wallet. The session wallet is the one
-approved in the Alchemy dashboard.
-
-## Hard rules
-
-- Do not hard-code `ALCHEMY_API_KEY`. Read `process.env.ALCHEMY_API_KEY`.
-- Do not commit `.env`.
-- Do not put card data, KYC, or Alchemy Pay order JSON on-chain.
-- Do not invent a `pmll_anchor` contract ID.
-- Ethereum RPC ≠ Alchemy Pay. One watches USDC; the other charges the card.
-
-## Docs
-
-- [SCF brief](docs/SCF.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Discord paste](docs/DISCORD.md)
-- [Alchemy Subscription API](https://www.alchemy.com/docs/reference/subscription-api)
-- [Alchemy Solana](https://www.alchemy.com/docs/solana/solana-api-overview)
-- [SEP-24](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md)
-- [Alchemy Pay page integration](https://alchemypay.readme.io/docs/page-integration-2)
